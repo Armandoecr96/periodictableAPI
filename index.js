@@ -19,6 +19,11 @@ app.use(require('./auth/auth'))
 app.use(require('./games/games'))
 app.use(require('./games/leaderboards'))
 
+/**
+ * @description Access to profile functions
+ */
+app.use(require('./auth/profile'))
+
 app.listen(3000, function () {
   console.log('... listening on port 3000!')
 })
