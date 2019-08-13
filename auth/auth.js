@@ -42,8 +42,8 @@ router.post('/signup', async function (req, res) {
 
 router.post('/login', function (req, res) {
   try {
-    const username = req.body[0].username
-    const pass = req.body[0].password
+    const username = req.body.username
+    const pass = req.body.password
     var query = `SELECT * FROM user WHERE name = '${username}';`
     con.query(query, function (_err, result) {
       bcrypt.compare(pass, result[0].password).then(function (compare) {
@@ -68,10 +68,12 @@ router.post('/login', function (req, res) {
 
 router.post('/loginFacebook', function (req, res) {
   try {
-    const facebookId = req.body[0].fbid
-    const facebookToken = req.body[0].fbToken
+    console.log(req.body)
+    const facebookId = req.body.fbid
+    const facebookToken = req.body.fbToken
     var query = `SELECT * FROM user WHERE facebookId='${facebookId}' AND facebookToken='${facebookToken}'`
     con.query(query, function (_err, result) {
+      console.log({ result })
       if (result.length === 1) {
         var payload = { token: result[0].password }
         var generatedToken = jwt.encode(payload, secret, 'HS512')
