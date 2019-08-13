@@ -32,7 +32,7 @@ router.post('/signup', async function (req, res) {
       } else {
         var payload = { token: passEncrypted }
         var generatedToken = jwt.encode(payload, secret, 'HS512')
-        res.send({ Token: generatedToken })
+        res.send(generatedToken)
       }
     })
   } catch (err) {
@@ -47,17 +47,21 @@ router.post('/login', function (req, res) {
     var query = `SELECT * FROM user WHERE name = '${username}';`
     con.query(query, function (_err, result) {
       bcrypt.compare(pass, result[0].password).then(function (compare) {
-        var payload = { token: result[0].password }
-        var generatedToken = jwt.encode(payload, secret, 'HS512')
-        var updateQuery = `UPDATE user SET token = '${generatedToken}' WHERE (iduser = '${result[0].iduser}');`
-        con.query(updateQuery, function (err, result) {
-          if (err) {
-            res.send('Failed')
-            throw err
-          } else {
-            res.send({ Token: generatedToken })
-          }
-        })
+        if (compare !== false) {
+          var payload = { token: result[0].password }
+          var generatedToken = jwt.encode(payload, secret, 'HS512')
+          var updateQuery = `UPDATE user SET token = '${generatedToken}' WHERE (iduser = '${result[0].iduser}');`
+          con.query(updateQuery, function (err, result) {
+            if (err) {
+              res.send('Failed')
+              throw err
+            } else {
+              res.send(generatedToken)
+            }
+          })
+        } else {
+          res.send('Invalid password')
+        }
       })
     })
   } catch (err) {
@@ -68,7 +72,6 @@ router.post('/login', function (req, res) {
 
 router.post('/loginFacebook', function (req, res) {
   try {
-    console.log(req.body)
     const facebookId = req.body.fbid
     const facebookToken = req.body.fbToken
     var query = `SELECT * FROM user WHERE facebookId='${facebookId}' AND facebookToken='${facebookToken}'`
@@ -83,7 +86,7 @@ router.post('/loginFacebook', function (req, res) {
             res.send('Failed')
             throw err
           } else {
-            res.send({ Token: generatedToken })
+            res.send(generatedToken)
           }
         })
       }
