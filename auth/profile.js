@@ -18,7 +18,7 @@ router.get('/profile', function (req, res) {
 
 router.post('/editProfile', function (req, res) {
   const token = req.body[0].token
-  var query = `SELECT * FROM (profile JOIN user) WHERE token= '${token}'`
+  var query = `UPDATE profile SET WHERE token= '${token}'`
   con.query(query, function (err, result) {
     if (err) {
       res.send('')
