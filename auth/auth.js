@@ -12,31 +12,70 @@ const secret = 'projectperiodictable'
  */
 router.post('/signup', async function (req, res) {
   try {
-    const username = req.body[0].username
-    const pass = req.body[0].password
-    const image = req.body[0].image
-    const facebookId = req.body[0].fbid
-    const facebookToken = req.body[0].fbToken
+    const username = req.body.username
+    const pass = req.body.password
+    const name = req.body.name
 
     var saltV = ''
     var passEncrypted = ''
     await bcrypt.genSalt(0).then((salt) => saltV = salt)
     await bcrypt.hash(pass, saltV).then((res) => passEncrypted = res)
 
-    var sql = `INSERT INTO user (name, password, image, facebookId, facebookToken, type) VALUES ('${username}', '${passEncrypted}', '${image}', ${facebookId}, '${facebookToken}', 'student')`
+    var sql = `INSERT INTO user (name, password, type) VALUES ('${username}', '${passEncrypted}', 'student')`
 
     con.query(sql, function (err, result) {
       if (err) {
+        console.log({ err })
         res.send('Failed')
         throw err
       } else {
         var payload = { token: passEncrypted }
         var generatedToken = jwt.encode(payload, secret, 'HS512')
-        res.send(generatedToken)
+        const generateName = name.split(' ')
+        var query = `INSERT INTO profile (iduser, name, lastName) VALUES ('${result.insertId}', '${generateName[0]})', '${generateName[1]}')`
+        con.query(query, function (__err, result) {
+          if (!__err) {
+            console.log({ __err })
+            res.send(generatedToken)
+          } else {
+            res.send('Signup fail')
+          }
+        })
       }
     })
   } catch (err) {
     console.log(err)
+    res.send('Signup fail')
+  }
+})
+
+router.post('/sigupWithFacebook', function (req, res) {
+  try {
+    const facebookId = req.body.fbid
+    const facebookToken = req.body.fbToken
+
+    var sql = `INSERT INTO user (facebookId, facebookToken, type) VALUES (${facebookId}', '${facebookToken}', 'student')`
+    con.query(sql, function (err, result) {
+      if (err) {
+        console.log({ err })
+        res.send('Failed')
+        throw err
+      } else {
+        var payload = { token: facebookToken }
+        var generatedToken = jwt.encode(payload, secret, 'HS512')
+        var query = `INSERT INTO profile (iduser) VALUES ('${result.insertId}')`
+        con.query(query, function (__err, result) {
+          if (!__err) {
+            console.log({ __err })
+            res.send(generatedToken)
+          } else {
+            res.send('Signup fail')
+          }
+        })
+      }
+    })
+  } catch (err) {
+    res.send(err)
   }
 })
 
@@ -76,7 +115,6 @@ router.post('/loginFacebook', function (req, res) {
     const facebookToken = req.body.fbToken
     var query = `SELECT * FROM user WHERE facebookId='${facebookId}' AND facebookToken='${facebookToken}'`
     con.query(query, function (_err, result) {
-      console.log({ result })
       if (result.length === 1) {
         var payload = { token: result[0].password }
         var generatedToken = jwt.encode(payload, secret, 'HS512')
@@ -89,9 +127,12 @@ router.post('/loginFacebook', function (req, res) {
             res.send(generatedToken)
           }
         })
+      } else {
+        res.send('NoRegister')
       }
     })
   } catch (err) {
+    res.send('Fail')
     console.log(err)
   }
 })
