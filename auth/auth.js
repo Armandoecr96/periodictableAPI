@@ -51,10 +51,11 @@ router.post('/signup', async function (req, res) {
 
 router.post('/sigupWithFacebook', function (req, res) {
   try {
+    const name = req.body.name
     const facebookId = req.body.fbid
     const facebookToken = req.body.fbToken
 
-    var sql = `INSERT INTO user (facebookId, facebookToken, type) VALUES (${facebookId}', '${facebookToken}', 'student')`
+    var sql = `INSERT INTO user (name, password, facebookId, facebookToken, type) VALUES ('${name}', '${facebookId}', '${facebookId}', '${facebookToken}', 'student')`
     con.query(sql, function (err, result) {
       if (err) {
         console.log({ err })
