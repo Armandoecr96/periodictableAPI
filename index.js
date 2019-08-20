@@ -14,10 +14,11 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(require('./auth/auth'))
 
 /**
- * @description Access to games funtions and leaderboards
+ * @description Access to games funtions, leaderboards and dictionaries
  */
 app.use(require('./games/games'))
 app.use(require('./games/leaderboards'))
+app.use(require('./games/periodicTable'))
 
 /**
  * @description Access to profile functions
