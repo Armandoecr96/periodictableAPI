@@ -13,3 +13,5 @@ router.get('/elements', function (req, res) {
     console.log(err)
   }
 })
+
+module.exports = router;

@@ -1,6 +1,6 @@
 var express = require('express')
 var router = express.Router()
-var bcrypt = require('bcrypt')
+var bcrypt = require('bcrypt-nodejs')
 var con = require('../db/database')
 var jwt = require('jwt-simple')
 

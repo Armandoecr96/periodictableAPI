@@ -11,12 +11,13 @@ router.get('/profile', function (req, res) {
       res.send('Failed')
       throw err
     } else {
+      console.log(result)
       res.send(result)
     }
   })
 })
 
-router.post('/editProfile', function (req, res) {
+router.put('/editProfile', function (req, res) {
   const token = req.body[0].token
   var query = `UPDATE profile SET WHERE token= '${token}'`
   con.query(query, function (err, result) {
