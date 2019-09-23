@@ -1,6 +1,6 @@
 var express = require('express')
 var router = express.Router()
-var bcrypt = require('bcrypt-nodejs')
+var bcrypt = require('bcrypt')
 var con = require('../db/database')
 var jwt = require('jwt-simple')
 
@@ -25,9 +25,7 @@ router.post('/signup', async function (req, res) {
 
     con.query(sql, function (err, result) {
       if (err) {
-        console.log({ err })
         res.send('Failed')
-        throw err
       } else {
         var payload = { token: passEncrypted }
         var generatedToken = jwt.encode(payload, secret, 'HS512')
@@ -60,7 +58,6 @@ router.post('/sigupWithFacebook', function (req, res) {
       if (err) {
         console.log({ err })
         res.send('Failed')
-        throw err
       } else {
         var payload = { token: facebookToken }
         var generatedToken = jwt.encode(payload, secret, 'HS512')
@@ -94,7 +91,6 @@ router.post('/login', function (req, res) {
           con.query(updateQuery, function (err, result) {
             if (err) {
               res.send('Failed')
-              throw err
             } else {
               res.send(generatedToken)
             }
@@ -123,7 +119,6 @@ router.post('/loginFacebook', function (req, res) {
         con.query(updateQuery, function (err, result) {
           if (err) {
             res.send('Failed')
-            throw err
           } else {
             res.send(generatedToken)
           }
