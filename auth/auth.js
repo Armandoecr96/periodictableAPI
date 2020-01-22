@@ -12,6 +12,7 @@ const secret = 'projectperiodictable'
  */
 router.post('/signup', async function (req, res) {
   try {
+    console.log(req.body)
     const username = req.body.username
     const pass = req.body.password
     const name = req.body.name
@@ -30,7 +31,7 @@ router.post('/signup', async function (req, res) {
         var payload = { token: passEncrypted }
         var generatedToken = jwt.encode(payload, secret, 'HS512')
         const generateName = name.split(' ')
-        var query = `INSERT INTO profile (iduser, name, lastName) VALUES ('${result.insertId}', '${generateName[0]})', '${generateName[1]}')`
+        var query = `INSERT INTO profile (iduser, name, lastName) VALUES ('${result.insertId}', '${generateName[0]}', '${generateName[1]}')`
         con.query(query, function (__err, result) {
           if (!__err) {
             console.log({ __err })
